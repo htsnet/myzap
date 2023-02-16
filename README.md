@@ -1,6 +1,6 @@
 # MyZap - Free Open Source Whatsapp Api
 
-Este fork é para uso com condições específicas para uso no FastZap.app.br. Para uso oficial, é aconselhado usar o repositório original.
+Este repositório é uma cópia e é para uso com condições específicas para uso no FastZap.app.br. Para uso oficial, é aconselhado usar o repositório original.
 
 [![Video explicativo do projeto](https://img.youtube.com/vi/blOpjAS1Fik/0.jpg)](https://www.youtube.com/watch?v=blOpjAS1Fik)
 
