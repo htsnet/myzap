@@ -175,6 +175,13 @@ app.post("/sendLocation", async (req, res, next) => {
     res.json(result);
 }); //sendLocation
 
+// 12/08/2023
+app.get("/getMessages", async (req, res, next) => {
+    var result = await Sessions.getMessages(req.body.sessionName);
+    res.json(result);
+}); //getAllChatsNewMsg
+
+// deprecate????
 app.get("/getAllChatsNewMsg", async (req, res, next) => {
     var result = await Sessions.getAllChatsNewMsg(req.body.sessionName);
     res.json(result);
