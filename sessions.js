@@ -349,10 +349,14 @@ module.exports = class Sessions {
         if (session) {
             if (session.state == "CONNECTED") {
                 await session.client.then(async client => {
-                    console.log(pegaDataHora() + 'simulando digitação');
-                    await client.startTyping(params.number + '@c.us');
-                    await sleep(5000);
-                    await client.stopTyping(params.number + '@c.us');
+                    try {
+                        console.log(pegaDataHora() + 'simulando digitação');
+                        await client.startTyping(params.number + '@c.us');
+                        await sleep(5000);
+                        await client.stopTyping(params.number + '@c.us');
+                    } catch {
+                        console.log('Não achou campo do chat');
+                    }
                     console.log(pegaDataHora() + '#### send msg =', params);
                     return await client.sendText(params.number + '@c.us', params.text);
                 });
@@ -585,6 +589,32 @@ module.exports = class Sessions {
         }
     } //link
 
+    // 12/08/2023
+    static async getMessages(sessionName) {
+        var session = Sessions.getSession(sessionName);
+        if (session) {
+            if (session.state == "CONNECTED") {
+                var resultGetAllChatsNewMsg = await session.client.then(async (client) => {
+                    return client.getMessages();
+                });
+                return {
+                    result: resultGetMessages
+                };
+            } else {
+                return {
+                    result: "error",
+                    message: session.state
+                };
+            }
+        } else {
+            return {
+                result: "error",
+                message: "NOTFOUND"
+            };
+        }
+    }
+
+    // deprecated?
     static async getAllChatsNewMsg(sessionName) {
         var session = Sessions.getSession(sessionName);
         if (session) {
