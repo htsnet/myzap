@@ -57,7 +57,7 @@ app.get("/start", async (req, res, next) => {
 });//start
 
 app.get("/status", async (req, res, next) => {
-    console.log(pegaDataHora() + "status..." + req.query.sessionName);
+    console.log(pegaDataHora() + "--> status..." + req.query.sessionName);
     var session = await Sessions.getStatus(req.query.sessionName);
     console.log(pegaDataHora() + session);
     res.status(200).json({

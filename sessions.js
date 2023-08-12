@@ -346,7 +346,7 @@ module.exports = class Sessions {
             text: req.body.text
         }
         var session = Sessions.getSession(params.sessionName);
-        console.log(sessionName + " | " + number  + " | " + text);
+        console.log(params.sessionName + " | " + params.number  + " | " + params.text);
         if (session) {
             if (session.state == "CONNECTED") {
                 await session.client.then(async client => {
