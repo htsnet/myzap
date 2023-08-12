@@ -34,6 +34,7 @@ if (process.env.HTTPS == 1) { //with ssl
 }//http
 
 app.get("/", async (req, res, next) => {
+    console.log(pegaDataHora() + "server..." + req.query.sessionName);
     var result = { "result": "ok" };
     res.json(result);
 });//
@@ -56,6 +57,7 @@ app.get("/start", async (req, res, next) => {
 });//start
 
 app.get("/status", async (req, res, next) => {
+    console.log(pegaDataHora() + "status..." + req.query.sessionName);
     var session = await Sessions.getStatus(req.query.sessionName);
     console.log(pegaDataHora() + session);
     res.status(200).json({
@@ -89,11 +91,13 @@ app.get("/qrcode", async (req, res, next) => {
 });//qrcode
 
 app.post("/sendHook", async function sendText(req, res, next) {
+    console.log(pegaDataHora() + "sendHook..." + req.query.sessionName);
     var result = await Sessions.saveHook(req);
     res.json(result);
 });//sendText
 
 app.post("/sendText", async function sendText(req, res, next) {
+    console.log(pegaDataHora() + "sendText..." + req.query.sessionName);
     var result = await Sessions.sendText(req);
     res.json(result);
 });//sendText
@@ -136,6 +140,7 @@ app.post("/sendImageStorie", async (req, res, next) => {
 }); //sendImageStorie
 
 app.post("/sendLink", async (req, res, next) => {
+    console.log(pegaDataHora() + "sendLink..." + req.query.sessionName);
     var result = await Sessions.sendLinkPreview(
         req.body.sessionName,
         req.body.number,
