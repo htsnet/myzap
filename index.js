@@ -91,7 +91,7 @@ app.get("/qrcode", async (req, res, next) => {
 });//qrcode
 
 app.post("/sendHook", async function sendText(req, res, next) {
-    console.log(pegaDataHora() + "--> sendHook..." + req.query.sessionName);
+    console.log(pegaDataHora() + "--> sendHook...");
     var result = await Sessions.saveHook(req);
     res.json(result);
 });//sendText
@@ -182,9 +182,10 @@ app.post("/sendLocation", async (req, res, next) => {
 
 // 12/08/2023
 app.get("/getMessages", async (req, res, next) => {
+    console.log(pegaDataHora() + "--> getMessages..."  + req.query.sessionName);
     var result = await Sessions.getMessages(req.body.sessionName);
     res.json(result);
-}); //getAllChatsNewMsg
+}); //getMessages
 
 // deprecate????
 app.get("/getAllChatsNewMsg", async (req, res, next) => {
