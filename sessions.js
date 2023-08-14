@@ -8,6 +8,9 @@ const venom = require('venom-bot');
 const wppconnect = require('@wppconnect-team/wppconnect');
 const axios = require('axios');
 
+// usa funções gerais
+import { pegaDataHora, getSubstrings, sleep } from './utils.js';
+
 module.exports = class Sessions {
 
     static async start(sessionName, options = []) {
@@ -346,7 +349,7 @@ module.exports = class Sessions {
             text: req.body.text
         }
         var session = Sessions.getSession(params.sessionName);
-        console.log(params.sessionName + " | " + params.number  + " | " + params.text);
+        console.log(params.sessionName + " | " + params.number  + " | " + getSubstrings(params.text));
         if (session) {
             if (session.state == "CONNECTED") {
                 await session.client.then(async client => {
@@ -715,13 +718,3 @@ module.exports = class Sessions {
     } //receber o perfil do usuário
 }
 
-function pegaDataHora() {
-    var today = new Date();
-    var date = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2, '0')+'-'+String(today.getDate()).padStart(2, '0') + ' ' + String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0') + ':' + String(today.getSeconds()).padStart(2, '0') + ': ';
-    return date;
-}
-
-//function to wait x ms
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
