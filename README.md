@@ -1,4 +1,4 @@
-# MyZap - Free Open Source Whatsapp Api
+# MyZap: cópia modificada
 
 Este repositório é uma cópia e é para uso com condições específicas para uso no FastZap.app.br. Para uso oficial, é aconselhado usar o repositório original.   
 
