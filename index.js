@@ -5,6 +5,7 @@ const https = require('https');
 const express = require("express");
 const cors = require('cors');
 const Sessions = require("./sessions");
+const utils = require("utils");
 require('dotenv').config();
 
 var app = express();
@@ -26,15 +27,15 @@ if (process.env.HTTPS == 1) { //with ssl
             cert: fs.readFileSync(process.env.SSL_CERT_PATH)
         },
         app).listen(appPort);
-    console.log(pegaDataHora() + "Https server running on port " + appPort);
+    console.log(utils.pegaDataHora() + "Https server running on port " + appPort);
 } else { //http
     app.listen(appPort, () => {
-        console.log(pegaDataHora() + "Http server running on port " + appPort);
+        console.log(utils.pegaDataHora() + "Http server running on port " + appPort);
     });
 }//http
 
 app.get("/", async (req, res, next) => {
-    console.log(pegaDataHora() + "--> situação do server");
+    console.log(utils.pegaDataHora() + "--> situação do server");
     var result = { "result": "ok" };
     res.json(result);
 });//
@@ -45,7 +46,7 @@ app.post('/exec', async (req, res) => {
 });
 
 app.get("/start", async (req, res, next) => {
-    console.log(pegaDataHora() + "--> starting..." + req.query.sessionName);
+    console.log(utils.pegaDataHora() + "--> starting..." + req.query.sessionName);
     var session = process.env.JSONBINIO_SECRET_KEY ?
         await Sessions.start(req.query.sessionName, { jsonbinio_secret_key: process.env.JSONBINIO_SECRET_KEY, jsonbinio_bin_id: process.env.JSONBINIO_BIN_ID }) :
         await Sessions.start(req.query.sessionName);
@@ -57,16 +58,16 @@ app.get("/start", async (req, res, next) => {
 });//start
 
 app.get("/status", async (req, res, next) => {
-    console.log(pegaDataHora() + "--> status..." + req.query.sessionName);
+    console.log(utils.pegaDataHora() + "--> status..." + req.query.sessionName);
     var session = await Sessions.getStatus(req.query.sessionName);
-    console.log(pegaDataHora() + "resultado: " + JSON.stringify(session));
+    console.log(utils.pegaDataHora() + "resultado: " + JSON.stringify(session));
     res.status(200).json({
         result: (!session.state) ? 'NOT_FOUND' : session.state
     });
 }); //status
 
 app.get("/qrcode", async (req, res, next) => {
-    console.log(pegaDataHora() + "--> qrcode..." + req.query.sessionName);
+    console.log(utils.pegaDataHora() + "--> qrcode..." + req.query.sessionName);
     var session = Sessions.getSession(req.query.sessionName);
 
     if (session != false) {
@@ -91,13 +92,13 @@ app.get("/qrcode", async (req, res, next) => {
 });//qrcode
 
 app.post("/sendHook", async function sendText(req, res, next) {
-    console.log(pegaDataHora() + "--> sendHook...");
+    console.log(utils.pegaDataHora() + "--> sendHook...");
     var result = await Sessions.saveHook(req);
     res.json(result);
 });//sendText
 
 app.post("/sendText", async function sendText(req, res, next) {
-    console.log(pegaDataHora() + "--> sendText...");
+    console.log(utils.pegaDataHora() + "--> sendText...");
     var result = await Sessions.sendText(req);
     res.json(result);
 });//sendText
@@ -140,7 +141,7 @@ app.post("/sendImageStorie", async (req, res, next) => {
 }); //sendImageStorie
 
 app.post("/sendLink", async (req, res, next) => {
-    console.log(pegaDataHora() + "--> sendLink...");
+    console.log(utils.pegaDataHora() + "--> sendLink...");
     var result = await Sessions.sendLinkPreview(
         req.body.sessionName,
         req.body.number,
@@ -182,7 +183,7 @@ app.post("/sendLocation", async (req, res, next) => {
 
 // 12/08/2023
 app.get("/getMessages", async (req, res, next) => {
-    console.log(pegaDataHora() + "--> getMessages..."  + req.query.sessionName);
+    console.log(utils.pegaDataHora() + "--> getMessages..."  + req.query.sessionName);
     var result = await Sessions.getMessages(req.body.sessionName);
     res.json(result);
 }); //getMessages
@@ -217,7 +218,7 @@ app.get("/getNumberProfile", async (req, res, next) => {
 app.get("/close", async (req, res, next) => {
     if (typeof(Sessions.options) != "undefined")  {
         if (Sessions.options.jsonbinio_secret_key !== undefined) {//se informou secret key pra salvar na nuvem
-            console.log(pegaDataHora() + "--> limpando token na nuvem...");
+            console.log(utils.pegaDataHora() + "--> limpando token na nuvem...");
             //salva dados do token da sessão na nuvem
             var data = JSON.stringify({ "nada": "nada" });
             var config = {
@@ -232,10 +233,10 @@ app.get("/close", async (req, res, next) => {
             };
             await axios(config)
                 .then(function (response) {
-                    console.log(pegaDataHora() + JSON.stringify(response.data));
+                    console.log(utils.pegaDataHora() + JSON.stringify(response.data));
                 })
                 .catch(function (error) {
-                    console.log(pegaDataHora() + error);
+                    console.log(utils.pegaDataHora() + error);
                 });
         }
     }
@@ -247,13 +248,13 @@ process.stdin.resume();//so the program will not close instantly
 
 async function exitHandler(options, exitCode) {
     if (options.cleanup) {
-        console.log(pegaDataHora() + 'cleanup');
+        console.log(utils.pegaDataHora() + 'cleanup');
         await Sessions.getSessions().forEach(async session => {
             await Sessions.closeSession(session.sessionName);
         });
     }
     if (exitCode || exitCode === 0) {
-        console.log(pegaDataHora() + exitCode);
+        console.log(utils.pegaDataHora() + exitCode);
     }
 
     if (options.exit) {
@@ -269,22 +270,3 @@ process.on('SIGUSR1', exitHandler.bind(null, { exit: true }));
 process.on('SIGUSR2', exitHandler.bind(null, { exit: true }));
 //catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
-
-function pegaDataHora() {
-    var today = new Date();
-    var date = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2, '0')+'-'+String(today.getDate()).padStart(2, '0') + ' ' + String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0') + ':' + String(today.getSeconds()).padStart(2, '0') + ': ';
-    return date;
-}
-
-function getSubstrings(str) {
-    if(str.length > 60) {
-      return str.substring(0, 30) + str.substring(str.length - 30); 
-    } else {
-      return str;
-    }
-  }
-
-  //function to wait x ms
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}

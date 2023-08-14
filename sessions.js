@@ -7,6 +7,7 @@ const path = require('path');
 const venom = require('venom-bot');
 const wppconnect = require('@wppconnect-team/wppconnect');
 const axios = require('axios');
+const utils = require("utils");
 
 module.exports = class Sessions {
 
@@ -92,7 +93,7 @@ module.exports = class Sessions {
                 },
                 // statusFind
                 (statusSession, session) => {
-                    console.log(pegaDataHora() + '#### status=' + statusSession + ' sessionName=' + session);
+                    console.log(utils.pegaDataHora() + '#### status=' + statusSession + ' sessionName=' + session);
                 }, {
                 folderNameToken: 'tokens',
                 headless: true,
@@ -346,19 +347,19 @@ module.exports = class Sessions {
             text: req.body.text
         }
         var session = Sessions.getSession(params.sessionName);
-        console.log(params.sessionName + " | " + params.number  + " | " + getSubstrings(params.text));
+        console.log(params.sessionName + " | " + params.number  + " | " + utils.getSubstrings(params.text));
         if (session) {
             if (session.state == "CONNECTED") {
                 await session.client.then(async client => {
                     try {
-                        console.log(pegaDataHora() + 'simulando digitação');
+                        console.log(utils.pegaDataHora() + 'simulando digitação');
                         await client.startTyping(params.number + '@c.us');
-                        await sleep(5000);
+                        await utils.sleep(5000);
                         await client.stopTyping(params.number + '@c.us');
                     } catch {
                         console.log('Não achou campo do chat');
                     }
-                    console.log(pegaDataHora() + '#### send msg =', params);
+                    console.log(utils.pegaDataHora() + '#### send msg =', utils.getSubstrings(params));
                     return await client.sendText(params.number + '@c.us', params.text);
                 });
                 return { result: "success" }
@@ -379,7 +380,7 @@ module.exports = class Sessions {
         if (session) {
             if (session.state == "CONNECTED") {
                 await session.client.then(async client => {
-                    console.log(pegaDataHora() + '#### send msg =', params);
+                    console.log(utils.pegaDataHora() + '#### send msg =', params);
                     return await client.sendText('status@broadcast', params.text);
                 });
                 return {
@@ -713,23 +714,4 @@ module.exports = class Sessions {
             };
         }
     } //receber o perfil do usuário
-}
-
-function pegaDataHora() {
-    var today = new Date();
-    var date = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2, '0')+'-'+String(today.getDate()).padStart(2, '0') + ' ' + String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0') + ':' + String(today.getSeconds()).padStart(2, '0') + ': ';
-    return date;
-}
-
-function getSubstrings(str) {
-    if(str.length > 60) {
-      return str.substring(0, 30) + str.substring(str.length - 30); 
-    } else {
-      return str;
-    }
-  }
-
-  //function to wait x ms
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }
