@@ -359,7 +359,7 @@ module.exports = class Sessions {
                     } catch {
                         console.log('Não achou campo do chat');
                     }
-                    console.log(pegaDataHora() + '#### send msg =', getSubstrings(params));
+                    // console.log(pegaDataHora() + '#### send msg =', getSubstrings(params));
                     return await client.sendText(params.number + '@c.us', params.text);
                 });
                 return { result: "success" }
