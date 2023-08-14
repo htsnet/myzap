@@ -7,7 +7,7 @@ const path = require('path');
 const venom = require('venom-bot');
 const wppconnect = require('@wppconnect-team/wppconnect');
 const axios = require('axios');
-const utils = require("./utils");
+const = require("./);
 
 module.exports = class Sessions {
 
@@ -347,19 +347,19 @@ module.exports = class Sessions {
             text: req.body.text
         }
         var session = Sessions.getSession(params.sessionName);
-        console.log(params.sessionName + " | " + params.number  + " | " + utils.getSubstrings(params.text));
+        console.log(params.sessionName + " | " + params.number  + " | " + getSubstrings(params.text));
         if (session) {
             if (session.state == "CONNECTED") {
                 await session.client.then(async client => {
                     try {
                         console.log(pegaDataHora() + 'simulando digitação');
                         await client.startTyping(params.number + '@c.us');
-                        await utils.sleep(5000);
+                        await sleep(5000);
                         await client.stopTyping(params.number + '@c.us');
                     } catch {
                         console.log('Não achou campo do chat');
                     }
-                    console.log(pegaDataHora() + '#### send msg =', utils.getSubstrings(params));
+                    console.log(pegaDataHora() + '#### send msg =', getSubstrings(params));
                     return await client.sendText(params.number + '@c.us', params.text);
                 });
                 return { result: "success" }
