@@ -7,7 +7,7 @@ const path = require('path');
 const venom = require('venom-bot');
 const wppconnect = require('@wppconnect-team/wppconnect');
 const axios = require('axios');
-const utils = require("utils");
+const utils = require("./utils");
 
 module.exports = class Sessions {
 
