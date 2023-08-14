@@ -1,13 +1,14 @@
 # MyZap - Free Open Source Whatsapp Api
 
-Este repositório é uma cópia e é para uso com condições específicas para uso no FastZap.app.br. Para uso oficial, é aconselhado usar o repositório original.
+Este repositório é uma cópia e é para uso com condições específicas para uso no FastZap.app.br. Para uso oficial, é aconselhado usar o repositório original.   
 
-[![Video explicativo do projeto](https://img.youtube.com/vi/blOpjAS1Fik/0.jpg)](https://www.youtube.com/watch?v=blOpjAS1Fik)
+Foram modificados alguns comportamentos para que sirva melhor aos propósitos do FastZap e ConfirmAki. Embora sejam úteis, podem não ser adequadas para outros serviços.   
 
+*****Aconselhamos a usar o repositório original!*****   
 
-[Grupo do Whatsapp: Link para o nosso grupo para tirar dúvidas e nos ajudarmos (clique aqui)](https://chat.whatsapp.com/DMehlYDcMWiKmlIsOLGAQM)
+___________________________________________________________
 
-
+*As informações abaixo são do projeto v1 original* 
 
 Este projeto usa como base o [Venom-bot](https://github.com/orkestral/venom) ou o [WPPCONNECT](https://github.com/wppconnect-team/wppconnect), um navegador virtual sem interface gráfica que abre o whatsapp web e executa todos os comandos via código possibilitando assim a automação de todas as funções.
 
