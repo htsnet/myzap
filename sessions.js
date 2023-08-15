@@ -354,7 +354,7 @@ module.exports = class Sessions {
                     try {
                         console.log(pegaDataHora() + 'simulando digitação');
                         await client.startTyping(params.number + '@c.us');
-                        await sleep(5000);
+                        await Utils.sleep(5000);
                         await client.stopTyping(params.number + '@c.us');
                     } catch {
                         console.log('Não achou campo do chat');
