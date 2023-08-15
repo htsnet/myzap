@@ -15,7 +15,7 @@ function getSubstrings(str) {
   }
 
   //function to wait x ms
-await function sleep(ms) {
+function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
