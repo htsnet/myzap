@@ -6,6 +6,7 @@ const express = require("express");
 const cors = require('cors');
 const Sessions = require("./sessions");
 const Utils = require("./utils");
+const os = require('os'); // para saber o estado do processador linux
 require('dotenv').config();
 
 var app = express();
@@ -59,11 +60,15 @@ app.get("/start", async (req, res, next) => {
 
 app.get("/status", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> status..." + req.query.sessionName);
-    var session = await Sessions.getStatus(req.query.sessionName);
-    console.log(Utils.pegaDataHora() + "resultado: " + session.state + " " + session.status);
-    res.status(200).json({
-        result: (!session.state) ? 'NOT_FOUND' : session.state
-    });
+    while(checkCpuUsage() === false) {
+        console.log('CPU ocupada... aguardando...')
+        await new Promise(resolve => setTimeout(resolve, 5000)); // aguarda 5 segundos para ver se baixa o consumo de CPU
+      }
+        var session = await Sessions.getStatus(req.query.sessionName);
+        console.log(Utils.pegaDataHora() + "resultado: " + session.state + " " + session.status);
+        res.status(200).json({
+            result: (!session.state) ? 'NOT_FOUND' : session.state
+        });
 }); //status
 
 app.get("/qrcode", async (req, res, next) => {
@@ -271,3 +276,18 @@ process.on('SIGUSR1', exitHandler.bind(null, { exit: true }));
 process.on('SIGUSR2', exitHandler.bind(null, { exit: true }));
 //catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
+
+
+// função para avaliar o consumo de cpu antes de executar alguma ação
+function checkCpuUsage() {
+    const cpus = os.cpus();
+    // Obtém o uso instantâneo de cada CPU
+    const userValues = cpus.map(cpu => cpu.times.user); 
+    // Soma o uso total
+    const totalUser = userValues.reduce((prev, curr) => prev + curr, 0);
+    // Calcula a média entre as CPUs
+    const avgUsage = totalUser / cpus.length; 
+    const usagePercent = avgUsage * 100 / 1e9;
+    console.log(Utils.pegaDataHora() + "CPU Usage: " + usagePercent.toFixed(2) + "%");
+    return usagePercent < 90; // retorna true se uso < 90%
+  }
