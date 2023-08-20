@@ -36,6 +36,8 @@ if (process.env.HTTPS == 1) { //with ssl
 }//http
 
 app.get("/", async (req, res, next) => {
+    // script para aguardar cpu estar baixa antes de executar
+    await waitCpuUsageLower();
     console.log(Utils.pegaDataHora() + "--> situação do server");
     var result = { "result": "ok" };
     res.json(result);
@@ -74,6 +76,8 @@ app.get("/status", async (req, res, next) => {
 
 app.get("/qrcode", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> qrcode..." + req.query.sessionName);
+    // script para aguardar cpu estar baixa antes de executar
+    await waitCpuUsageLower();
     var session = Sessions.getSession(req.query.sessionName);
 
     if (session != false) {
@@ -105,6 +109,8 @@ app.post("/sendHook", async function sendText(req, res, next) {
 
 app.post("/sendText", async function sendText(req, res, next) {
     console.log(Utils.pegaDataHora() + "--> sendText...");
+    // script para aguardar cpu estar baixa antes de executar
+    await waitCpuUsageLower();
     var result = await Sessions.sendText(req);
     res.json(result);
 });//sendText
@@ -148,6 +154,8 @@ app.post("/sendImageStorie", async (req, res, next) => {
 
 app.post("/sendLink", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> sendLink...");
+    // script para aguardar cpu estar baixa antes de executar
+    await waitCpuUsageLower();
     var result = await Sessions.sendLinkPreview(
         req.body.sessionName,
         req.body.number,
