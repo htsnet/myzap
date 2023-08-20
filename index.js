@@ -307,7 +307,7 @@ async function checkCpuUsage() {
     // const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / 10 // divide por 10 por ser 10 amostragens;
     // console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsagePercent.toFixed(2) + "%");
     // //return totalUsage < 90; // retorna true se uso < 90%
-
+console.log(process.cpuUsage());
     console.log('Consumo CPU ' + process.cpuUsage().totalCPUTime);
     return true; ///TODO remover depois que ajustar o % correto
 }
