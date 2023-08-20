@@ -295,10 +295,7 @@ async function checkCpuUsage() {
     // faz uma amostra de 10 vezes e calcula o total de uso de cpu
     for (let i = 0; i < 10; i++) {
         cpus.forEach(cpu => {
-            console.log(cpu.times.sys/ 1000000);
-            console.log(cpu.times.nice/ 1000000);
-            console.log(cpu.times.irq/ 1000000);
-            console.log(cpu.times.user/ 1000000);
+            console.log(cpu.times);
             totalTotal += (cpu.times.sys + cpu.times.nice + cpu.times.irq + cpu.times.user) / 1000000;
         });
         await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
