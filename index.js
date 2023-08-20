@@ -300,7 +300,7 @@ async function checkCpuUsage() {
         await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
 
     }
-    const totalUsage = totalTotal/cpus.length * 100;
+    const totalUsage = totalTotal/cpus.length;
 
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + totalUsage.toFixed(2) + "%");
     //return totalUsage < 90; // retorna true se uso < 90%
