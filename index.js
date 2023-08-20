@@ -66,9 +66,10 @@ app.get("/status", async (req, res, next) => {
         await new Promise(resolve => setTimeout(resolve, 5000)); // aguarda 5 segundos para ver se baixa o consumo de CPU
       }
         var session = await Sessions.getStatus(req.query.sessionName);
-        console.log(Utils.pegaDataHora() + "resultado: " + (!session.state) ? 'NOT_FOUND' : session.state);
+        var result = (!session.state) ? 'NOT_FOUND' : session.state;
+        console.log(Utils.pegaDataHora() + "resultado: " + result);
         res.status(200).json({
-            result: (!session.state) ? 'NOT_FOUND' : session.state
+            result: result
         });
 }); //status
 
