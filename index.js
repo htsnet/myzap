@@ -7,6 +7,7 @@ const cors = require('cors');
 const Sessions = require("./sessions");
 const Utils = require("./utils");
 const os = require('os'); // para saber o estado do processador linux
+const process = require('process');
 require('dotenv').config();
 
 var app = express();
@@ -289,26 +290,25 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 
 // função para avaliar o consumo de cpu antes de executar alguma ação
 async function checkCpuUsage() {
-    const cpus = os.cpus();
-    let totalTime = 0;
-    let totalCpuTime = 0;
-    // faz uma amostra de 10 vezes e calcula o total de uso de cpu
-    for (let i = 0; i < 10; i++) {
-        // pega a cada iteração os dados da cpu
-        const cpus = os.cpus();
-        cpus.forEach(cpu => {
-            console.log(cpu.times);
-            totalTime += cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
-            totalCpuTime += cpu.times.user + cpu.times.nice + cpu.times.sys; // Excluindo o tempo ocioso (idle)
-        });
-        await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
-    }
-    const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / 10 // divide por 10 por ser 10 amostragens;
-    // divide pelo número de cpus e depois pelo número de testes
-    const totalUsage = totalTotal/cpus.length/10;
+    // const cpus = os.cpus();
+    // let totalTime = 0;
+    // let totalCpuTime = 0;
+    // // faz uma amostra de 10 vezes e calcula o total de uso de cpu
+    // for (let i = 0; i < 10; i++) {
+    //     // pega a cada iteração os dados da cpu
+    //     const cpus = os.cpus();
+    //     cpus.forEach(cpu => {
+    //         console.log(cpu.times);
+    //         totalTime += cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
+    //         totalCpuTime += cpu.times.user + cpu.times.nice + cpu.times.sys; // Excluindo o tempo ocioso (idle)
+    //     });
+    //     await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
+    // }
+    // const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / 10 // divide por 10 por ser 10 amostragens;
+    // console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsagePercent.toFixed(2) + "%");
+    // //return totalUsage < 90; // retorna true se uso < 90%
 
-    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + totalUsage.toFixed(2) + "%");
-    //return totalUsage < 90; // retorna true se uso < 90%
+    console.log('Consumo CPU ' + process.cpuUsage().totalCPUTime);
     return true; ///TODO remover depois que ajustar o % correto
 }
 
