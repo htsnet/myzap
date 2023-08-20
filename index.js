@@ -289,11 +289,11 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 
 // função para avaliar o consumo de cpu antes de executar alguma ação
 async function checkCpuUsage() {
-    const cpus = os.cpus();
-    console.log(cpus.length);
     let totalTotal = 0;
     // faz uma amostra de 10 vezes e calcula o total de uso de cpu
     for (let i = 0; i < 10; i++) {
+        // pega a cada iteração os dados da cpu
+        const cpus = os.cpus();
         cpus.forEach(cpu => {
             console.log(cpu.times);
             totalTotal += (cpu.times.sys + cpu.times.nice + cpu.times.irq + cpu.times.user) / 1000000;
