@@ -290,6 +290,7 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 // função para avaliar o consumo de cpu antes de executar alguma ação
 async function checkCpuUsage() {
     const cpus = os.cpus();
+    console.log(cpus.length);
     let totalTotal = 0;
     // faz uma amostra de 10 vezes e calcula o total de uso de cpu
     for (let i = 0; i < 10; i++) {
@@ -300,6 +301,7 @@ async function checkCpuUsage() {
         await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
 
     }
+    console.log(totalTotal);
     const totalUsage = totalTotal/cpus.length;
 
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + totalUsage.toFixed(2) + "%");
