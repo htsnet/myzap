@@ -302,7 +302,8 @@ async function checkCpuUsage() {
 
     }
     console.log(totalTotal);
-    const totalUsage = totalTotal/cpus.length;
+    // divide pelo número de cpus e depois pelo número de testes
+    const totalUsage = totalTotal/cpus.length/10;
 
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + totalUsage.toFixed(2) + "%");
     //return totalUsage < 90; // retorna true se uso < 90%
