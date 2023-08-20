@@ -298,8 +298,8 @@ async function checkCpuUsage() {
         const cpus = os.cpus();
         cpus.forEach(cpu => {
             console.log(cpu.times);
-            totalTime += times.user + times.nice + times.sys + times.idle + times.irq;
-            totalCpuTime += times.user + times.nice + times.sys; // Excluindo o tempo ocioso (idle)
+            totalTime += cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
+            totalCpuTime += cpu.times.user + cpu.times.nice + cpu.times.sys; // Excluindo o tempo ocioso (idle)
         });
         await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
     }
