@@ -37,10 +37,13 @@ if (process.env.HTTPS == 1) { //with ssl
 }//http
 
 app.get("/", async (req, res, next) => {
-    // script para aguardar cpu estar baixa antes de executar
-    await waitCpuUsageLower();
     console.log(Utils.pegaDataHora() + "--> situação do server");
-    var result = { "result": "ok" };
+    // script para aguardar cpu estar baixa antes de executar
+    if (await waitCpuUsageLower()) {
+        var result = { "result": "ok" };
+    } else {
+        var result = { "error": "Ocupado. Tente novamente em instantes." };
+    }
     res.json(result);
 });//
 
@@ -298,7 +301,7 @@ async function checkCpuUsage() {
         // pega a cada iteração os dados da cpu
         const cpus = os.cpus();
         cpus.forEach(cpu => {
-            console.log(cpu.times);
+            // console.log(cpu.times);
             totalTime += cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq;
             totalCpuTime += cpu.times.user + cpu.times.nice + cpu.times.sys; // Excluindo o tempo ocioso (idle)
         });
@@ -306,21 +309,28 @@ async function checkCpuUsage() {
     }
     const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / qtdeAmostras // divide pela quantidade de amostragens;
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsagePercent.toFixed(2) + "%");
-    //return totalUsage < 90; // retorna true se uso < 90%
-    return true; ///TODO remover depois que ajustar o % correto
+    return  cpuUsagePercent < 90; // retorna true se uso < 90%
 }
 
 
 // função para obter o uso de cpu atual e esperar ou executar uma ação
 function waitCpuUsageLower() {
+    const esperarQuantasVezes = 5;
+    const quantasVezes = 0;
+   
     return new Promise((resolve, reject) => {
+        quantasVezes += 1;
         const check = () => {
             const usage = checkCpuUsage(); //obtém uso atual
             if (usage) {
-                resolve();
+                resolve(true);
             } else {
-                console.log('CPU ocupada... aguardando...')
-                setTimeout(check, 5000); // tenta novamente em 5 segundos
+                console.log('CPU ocupada... aguardando...');
+                if (quantasVezes >= esperarQuantasVezes) {
+                    resolve(false);
+                } else {
+                    setTimeout(check, 5000); // tenta novamente em 5 segundos
+                }
             }
         };
         check();
