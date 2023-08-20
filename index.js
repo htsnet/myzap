@@ -48,6 +48,8 @@ app.post('/exec', async (req, res) => {
 
 app.get("/start", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> starting..." + req.query.sessionName);
+    // script para aguardar cpu estar baixa antes de executar
+    await waitCpuUsageLower();
     var session = process.env.JSONBINIO_SECRET_KEY ?
         await Sessions.start(req.query.sessionName, { jsonbinio_secret_key: process.env.JSONBINIO_SECRET_KEY, jsonbinio_bin_id: process.env.JSONBINIO_BIN_ID }) :
         await Sessions.start(req.query.sessionName);
@@ -61,16 +63,13 @@ app.get("/start", async (req, res, next) => {
 app.get("/status", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> status..." + req.query.sessionName);
     // script para aguardar cpu estar baixa antes de executar
-    while(checkCpuUsage() === false) {
-        console.log('CPU ocupada... aguardando...')
-        await new Promise(resolve => setTimeout(resolve, 5000)); // aguarda 5 segundos para ver se baixa o consumo de CPU
-      }
-        var session = await Sessions.getStatus(req.query.sessionName);
-        var result = (!session.state) ? 'NOT_FOUND' : session.state;
-        console.log(Utils.pegaDataHora() + "resultado: " + result);
-        res.status(200).json({
-            result: result
-        });
+    await waitCpuUsageLower();
+    var session = await Sessions.getStatus(req.query.sessionName);
+    var result = (!session.state) ? 'NOT_FOUND' : session.state;
+    console.log(Utils.pegaDataHora() + "resultado: " + result);
+    res.status(200).json({
+        result: result
+    });
 }); //status
 
 app.get("/qrcode", async (req, res, next) => {
@@ -190,7 +189,7 @@ app.post("/sendLocation", async (req, res, next) => {
 
 // 12/08/2023
 app.get("/getMessages", async (req, res, next) => {
-    console.log(Utils.pegaDataHora() + "--> getMessages..."  + req.query.sessionName);
+    console.log(Utils.pegaDataHora() + "--> getMessages..." + req.query.sessionName);
     var result = await Sessions.getMessages(req.body.sessionName);
     res.json(result);
 }); //getMessages
@@ -224,7 +223,7 @@ app.get("/getNumberProfile", async (req, res, next) => {
 }); //Verifica perfil
 
 app.get("/close", async (req, res, next) => {
-    if (typeof(Sessions.options) != "undefined")  {
+    if (typeof (Sessions.options) != "undefined") {
         if (Sessions.options.jsonbinio_secret_key !== undefined) {//se informou secret key pra salvar na nuvem
             console.log(Utils.pegaDataHora() + "--> limpando token na nuvem...");
             //salva dados do token da sessão na nuvem
@@ -284,12 +283,28 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 function checkCpuUsage() {
     const cpus = os.cpus();
     // Obtém o uso instantâneo de cada CPU
-    const userValues = cpus.map(cpu => cpu.times.user); 
+    const userValues = cpus.map(cpu => cpu.times.user);
     // Soma o uso total
     const totalUser = userValues.reduce((prev, curr) => prev + curr, 0);
     // Calcula a média entre as CPUs
-    const avgUsage = totalUser / cpus.length; 
+    const avgUsage = totalUser / cpus.length;
     const usagePercent = avgUsage * 100 / 1e9;
     console.log(Utils.pegaDataHora() + "CPU Usage: " + usagePercent.toFixed(2) + "%");
     return usagePercent < 90; // retorna true se uso < 90%
-  }
+}
+
+// função para obter o uso de cpu atual e esperar ou executar uma ação
+function waitCpuUsageLower() {
+    return new Promise((resolve, reject) => {
+        const check = () => {
+            const usage = checkCpuUsage(); //obtém uso atual
+            if (usage) {
+                resolve();
+            } else {
+                console.log('CPU ocupada... aguardando...')
+                setTimeout(check, 5000); // tenta novamente em 5 segundos
+            }
+        };
+        check();
+    });
+}
