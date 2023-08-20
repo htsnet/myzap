@@ -316,7 +316,7 @@ async function checkCpuUsage() {
 // função para obter o uso de cpu atual e esperar ou executar uma ação
 function waitCpuUsageLower() {
     const esperarQuantasVezes = 5;
-    const quantasVezes = 0;
+    quantasVezes = 0;
    
     return new Promise((resolve, reject) => {
         quantasVezes += 1;
