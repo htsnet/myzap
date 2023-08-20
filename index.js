@@ -288,6 +288,11 @@ process.on('SIGUSR2', exitHandler.bind(null, { exit: true }));
 process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 
 
+setInterval(() => {
+    console.log(process.cpuUsage());
+    console.log('CPU usage:', process.cpuUsage().totalCPUTime);
+  }, 1000);
+
 // função para avaliar o consumo de cpu antes de executar alguma ação
 async function checkCpuUsage() {
     // const cpus = os.cpus();
@@ -307,7 +312,7 @@ async function checkCpuUsage() {
     // const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / 10 // divide por 10 por ser 10 amostragens;
     // console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsagePercent.toFixed(2) + "%");
     // //return totalUsage < 90; // retorna true se uso < 90%
-console.log(process.cpuUsage());
+    console.log(process.cpuUsage());
     console.log('Consumo CPU ' + process.cpuUsage().totalCPUTime);
     return true; ///TODO remover depois que ajustar o % correto
 }
