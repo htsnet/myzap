@@ -60,12 +60,13 @@ app.get("/start", async (req, res, next) => {
 
 app.get("/status", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> status..." + req.query.sessionName);
+    // script para aguardar cpu estar baixa antes de executar
     while(checkCpuUsage() === false) {
         console.log('CPU ocupada... aguardando...')
         await new Promise(resolve => setTimeout(resolve, 5000)); // aguarda 5 segundos para ver se baixa o consumo de CPU
       }
         var session = await Sessions.getStatus(req.query.sessionName);
-        console.log(Utils.pegaDataHora() + "resultado: " + session.state + " " + session.status);
+        console.log(Utils.pegaDataHora() + "resultado: " + (!session.state) ? 'NOT_FOUND' : session.state);
         res.status(200).json({
             result: (!session.state) ? 'NOT_FOUND' : session.state
         });
