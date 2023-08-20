@@ -289,29 +289,15 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 
 // função para avaliar o consumo de cpu antes de executar alguma ação
 async function checkCpuUsage() {
-    const cpus = os.cpus();
-    const numCpus = cpus.length;
-
-    const initialTimes = cpus.map(cpu => cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq + cpu.times.softirq);
-
-    await new Promise(resolve => setTimeout(resolve, 200)); // Espera 200ms antes de medir novamente
-
-    const updatedCpus = os.cpus();
-    const updatedTimes = updatedCpus.map(cpu => cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq + cpu.times.softirq);
-
-    const cpuUsages = [];
-    for (let i = 0; i < numCpus; i++) {
-        const totalUsage = (updatedTimes[i] - initialTimes[i]) / 1000;
-        cpuUsages.push(totalUsage);
+    var cpuUsage = 0;
+    for (var i = 0; i < os.cpus().length; i++) {
+        cpuUsage += os.cpus()[i].loadavg[0];
     }
+    return cpuUsage;
 
-    const avgUsage = (cpuUsages.reduce((total, usage) => total + usage, 0) / numCpus) * 100;
-
-    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + avgUsage.toFixed(2) + "%");
-    return avgUsage < 90; // retorna true se uso < 90%
+    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsage.toFixed(2) + "%");
+    return cpuUsage < 90; // retorna true se uso < 90%
 }
-
-
 
 
 // função para obter o uso de cpu atual e esperar ou executar uma ação
