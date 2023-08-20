@@ -308,8 +308,8 @@ async function checkCpuUsage() {
   const idle = idleMs / totalMs;
   const usage = 100 - (idle * 100);
 
-    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsage.toFixed(2) + "%");
-    return cpuUsage < 90; // retorna true se uso < 90%
+    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + usage.toFixed(2) + "%");
+    return usage < 90; // retorna true se uso < 90%
 }
 
 
