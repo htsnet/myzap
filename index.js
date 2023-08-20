@@ -7,7 +7,6 @@ const cors = require('cors');
 const Sessions = require("./sessions");
 const Utils = require("./utils");
 const os = require('os'); // para saber o estado do processador linux
-const process = require('process');
 require('dotenv').config();
 
 var app = express();
@@ -55,14 +54,18 @@ app.post('/exec', async (req, res) => {
 app.get("/start", async (req, res, next) => {
     console.log(Utils.pegaDataHora() + "--> starting..." + req.query.sessionName);
     // script para aguardar cpu estar baixa antes de executar
-    await waitCpuUsageLower();
-    var session = process.env.JSONBINIO_SECRET_KEY ?
-        await Sessions.start(req.query.sessionName, { jsonbinio_secret_key: process.env.JSONBINIO_SECRET_KEY, jsonbinio_bin_id: process.env.JSONBINIO_BIN_ID }) :
-        await Sessions.start(req.query.sessionName);
-    if (["CONNECTED", "QRCODE", "STARTING"].includes(session.state)) {
-        res.status(200).json({ result: 'success', message: session.state });
+    if (await waitCpuUsageLower()) {
+        var session = process.env.JSONBINIO_SECRET_KEY ?
+            await Sessions.start(req.query.sessionName, { jsonbinio_secret_key: process.env.JSONBINIO_SECRET_KEY, jsonbinio_bin_id: process.env.JSONBINIO_BIN_ID }) :
+            await Sessions.start(req.query.sessionName);
+        if (["CONNECTED", "QRCODE", "STARTING"].includes(session.state)) {
+            res.status(200).json({ result: 'success', message: session.state });
+        } else {
+            res.status(200).json({ result: 'error', message: session.state });
+        }
     } else {
-        res.status(200).json({ result: 'error', message: session.state });
+        var result = { "error": "Ocupado. Tente novamente em instantes." };
+        res.json(result);
     }
 });//start
 
@@ -309,7 +312,8 @@ async function checkCpuUsage() {
     }
     const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / qtdeAmostras // divide pela quantidade de amostragens;
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsagePercent.toFixed(2) + "%");
-    return  cpuUsagePercent < 90; // retorna true se uso < 90%
+    //TODO não está funcionando corretamente, a resposta é praticamente sempre igual, sem refletir o uso de cpu real
+    return cpuUsagePercent < 90; // retorna true se uso < 90%
 }
 
 
@@ -317,7 +321,7 @@ async function checkCpuUsage() {
 function waitCpuUsageLower() {
     const esperarQuantasVezes = 5;
     quantasVezes = 0;
-   
+
     return new Promise((resolve, reject) => {
         quantasVezes += 1;
         const check = () => {
