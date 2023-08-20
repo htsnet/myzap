@@ -291,25 +291,23 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 async function checkCpuUsage() {
     const cpus = os.cpus();
   
-  let idleMs = 0;
-  let totalMs = 0;
+    let totalUser = 0;
+    let totalSystem = 0;
+    let totalIdle = 0;
 
   for(let i = 0; i < 10; i++) {
 
     cpus.forEach(cpu => {
-      idleMs += cpu.times.idle;
-      totalMs += cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle;
-    });
+        totalUser += cpu.times.user;
+        totalSystem += cpu.times.sys;
+        totalIdle += cpu.times.idle;
+      });
 
-    await new Promise(r => setTimeout(r, 200));
+      const total = totalUser + totalSystem;
+  const totalUsage = (total / (total + totalIdle)) * 100;
 
-  }
-
-  const idle = idleMs / totalMs;
-  const usage = 100 - (idle * 100);
-
-    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + usage.toFixed(2) + "%");
-    return usage < 90; // retorna true se uso < 90%
+    console.log(Utils.pegaDataHora() + " Total CPU Usage: " + totalUsage.toFixed(2) + "%");
+    return totalUsage < 90; // retorna true se uso < 90%
 }
 
 
