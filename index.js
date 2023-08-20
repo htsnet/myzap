@@ -296,7 +296,7 @@ function checkCpuUsage() {
     const totalUser = userValues.reduce((prev, curr) => prev + curr, 0);
     // Calcula a média entre as CPUs
     const avgUsage = totalUser / cpus.length;
-    const usagePercent = avgUsage * 100 / 1e9;
+    const usagePercent = avgUsage * 100 / 1e6;
     console.log(Utils.pegaDataHora() + "CPU Usage: " + usagePercent.toFixed(2) + "%");
     return usagePercent < 90; // retorna true se uso < 90%
 }
