@@ -295,9 +295,7 @@ async function checkCpuUsage() {
     let totalSystem = 0;
     let totalIdle = 0;
 
-  for(let i = 0; i < 10; i++) {
-
-    cpus.forEach(cpu => {
+      cpus.forEach(cpu => {
         totalUser += cpu.times.user;
         totalSystem += cpu.times.sys;
         totalIdle += cpu.times.idle;
