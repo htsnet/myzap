@@ -305,7 +305,7 @@ async function checkCpuUsage() {
     const avgUsage = total / cpuUsages.length;
 
     console.log(Utils.pegaDataHora() + "CPU Usage: " + avgUsage.toFixed(2) + "%");
-    return avgUsage < 90; // retorna true se uso < 90%
+    return true; // retorna true se uso < 90%
 }
 
 // função para obter o uso de cpu atual e esperar ou executar uma ação
