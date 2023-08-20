@@ -290,25 +290,27 @@ process.on('uncaughtException', exitHandler.bind(null, { exit: true }));
 // função para avaliar o consumo de cpu antes de executar alguma ação
 async function checkCpuUsage() {
     const cpus = os.cpus();
-    // Obtém uso total da CPU
+    const numCpus = cpus.length;
+
+    const initialTimes = cpus.map(cpu => cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq + cpu.times.softirq);
+
+    await new Promise(resolve => setTimeout(resolve, 200)); // Espera 200ms antes de medir novamente
+
+    const updatedCpus = os.cpus();
+    const updatedTimes = updatedCpus.map(cpu => cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq + cpu.times.softirq);
+
     const cpuUsages = [];
-    for (let i = 0; i < 10; i++) {
-        const startTimes = cpus.map(cpu => cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq + cpu.times.softirq);
-        await new Promise(r => setTimeout(r, 200)); // Espera 200ms antes de medir novamente
-        const endTimes = cpus.map(cpu => cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.idle + cpu.times.irq + cpu.times.softirq);
-        
-        const totalStart = startTimes.reduce((total, time) => total + time, 0);
-        const totalEnd = endTimes.reduce((total, time) => total + time, 0);
-        const totalUsage = ((totalEnd - totalStart) / 1000) / cpus.length;
+    for (let i = 0; i < numCpus; i++) {
+        const totalUsage = (updatedTimes[i] - initialTimes[i]) / 1000;
         cpuUsages.push(totalUsage);
     }
 
-    // Calcula média
-    const avgUsage = (cpuUsages.reduce((total, usage) => total + usage, 0) / cpuUsages.length) * 100;
+    const avgUsage = (cpuUsages.reduce((total, usage) => total + usage, 0) / numCpus) * 100;
 
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + avgUsage.toFixed(2) + "%");
-    return true; // retorna true se uso < 90%
+    return avgUsage < 90; // retorna true se uso < 90%
 }
+
 
 
 
