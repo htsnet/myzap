@@ -299,7 +299,7 @@ async function checkCpuUsage() {
     let totalTime = 0;
     let totalCpuTime = 0;
     // faz uma amostra de 10 vezes e calcula o total de uso de cpu
-    qtdeAmostras = 10;
+    const qtdeAmostras = 10;
     for (let i = 0; i < qtdeAmostras; i++) {
         // pega a cada iteração os dados da cpu
         const cpus = os.cpus();
@@ -310,7 +310,7 @@ async function checkCpuUsage() {
         });
         await new Promise(r => setTimeout(r, 100)); // amostra a cada 100ms
     }
-    const cpuUsagePercent = (totalCpuTime / totalTime) * 100 / qtdeAmostras // divide pela quantidade de amostragens;
+    const cpuUsagePercent = ((totalCpuTime/ qtdeAmostras) / (totalTime/ qtdeAmostras)) * 100  // divide pela quantidade de amostragens;
     console.log(Utils.pegaDataHora() + " Total CPU Usage: " + cpuUsagePercent.toFixed(2) + "%");
     //TODO não está funcionando corretamente, a resposta é praticamente sempre igual, sem refletir o uso de cpu real
     return cpuUsagePercent < 90; // retorna true se uso < 90%
@@ -320,7 +320,7 @@ async function checkCpuUsage() {
 // função para obter o uso de cpu atual e esperar ou executar uma ação
 function waitCpuUsageLower() {
     const esperarQuantasVezes = 5;
-    quantasVezes = 0;
+    let quantasVezes = 0;
 
     return new Promise((resolve, reject) => {
         quantasVezes += 1;
