@@ -9,7 +9,7 @@
   "author": "Bill Barsch",
   "license": "ISC",
   "dependencies": {
-    "@wppconnect-team/wppconnect": "^1.21.0",
+    "@wppconnect-team/wppconnect": "^1.2.123",
     "axios": "^0.21.4",
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",
